@@ -8,5 +8,13 @@ import spotipy.util as util
 sys.path.append('.')
 from playlistFuncs import *
 
-token = getAuth()
-getTrackInfo(token)
+username = raw_input('Enter you Spotify Username: ')
+token = getAuth('user-library-read', username)
+trackInfo = getTrackInfo(token)
+songInfo = trackInfo['songData']
+genreInfo = trackInfo['genreData']
+genre=raw_input('What genre would you like your playlist to be in? (Enter list to see options): ') 
+if genre=='list':
+	for item in genreInfo.keys():
+		print item
+#generatePlaylist
