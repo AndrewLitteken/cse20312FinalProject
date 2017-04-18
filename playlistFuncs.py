@@ -59,5 +59,47 @@ def getTrackInfo(token):
 	print 'Collection of '+str(offset-50+count)+' tracks complete'
 	return {'songData': songInfo, 'genreData': genreArtist}
 
-#def createPlaylist():
-	
+def selectGenre(genreInfo):
+	genres=[]
+	inex=raw_input('Select genres to include or exclude? I or E: ')
+	for item in genreInfo.keys():
+                genres.append(item)
+	if inex=='E':	
+		genres=genreCutting(genres)
+	else:
+		genres=genreAdding(genres)	
+	songs = []
+	for genre in genres:
+		for song in genreInfo[genre]:
+			songs.append(song)
+	return songs
+
+def genreCutting(genres):
+	genre=raw_input('Are there genres you would like to exclude? (Enter "l" to see options and "n" to end input): ') 
+	while genre!='n':
+        	if genre=='l':
+                	for item in genres:
+                        	print item
+        	genre=raw_input('Next genre: ')
+        	if genre != 'l' and genre != 'n':
+                	if genre not in genres:
+				print 'Genre not in list'
+			else:
+				genres.remove(genre)
+	return genres
+
+def genreAdding(genres):
+	genre=raw_input('Are there genres you would like to include? (Enter "l" to see options and "n" to end input): ')
+	new_genres=[]
+	while genre!='n':
+                if genre=='l':
+                        for item in genres:
+                                print item
+                genre=raw_input('Next genre: ')
+                if genre != 'l' and genre != 'n':
+                        if genre not in genres:
+                                print 'Genre not in list'
+                        else:
+                                if genre not in new_genres:
+					new_genres.append(genre)
+        return new_genres
