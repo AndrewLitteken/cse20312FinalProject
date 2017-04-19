@@ -10,6 +10,5 @@ from playlistFuncs import *
 
 username = raw_input('Enter your Spotify Username: ')
 token = getAuth('user-library-read', username)
-trackInfo = getTrackInfo(token)
-genreInfo = trackInfo['genreData']
+genreInfo = getTrackInfo(token)
 songs = filterSongs(genreInfo)
