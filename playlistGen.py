@@ -9,6 +9,21 @@ sys.path.append('.')
 from playlistFuncs import *
 
 username = raw_input('Enter your Spotify Username: ')
-token = getAuth('user-library-read', username)
-genreInfo = getTrackInfo(token)
-songs = filterSongs(genreInfo)
+make=1
+usertoken = getAuth('user-library-read', username)
+playtoken = getAuth('playlist-modify-private', username) 
+genreInfo = getTrackInfo(usertoken)
+while make:
+	songs = filterSongs(genreInfo)
+	for index, song in enumerate(songs):
+		print str(index+1)+'. '+song[1].name+" - "+song[1].album
+	create_playlist=raw_input("\nWould you like to push this playlist to Spotify? Y/N: ")
+	if create_playlist.lower()=='y':
+		push_playlist(songs, playtoken)
+	cont=raw_input("Would you like to make another playlist? Y/N: ")
+	if cont.lower()=='y':
+		make=1
+	else:
+		make=0
+print("We hope you enjoy your playlists!")	
+
