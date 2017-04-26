@@ -77,21 +77,20 @@ def filterSongs(genreInfo):
 		genres=genreCutting(genres)
 	else:
 		genres=genreAdding(genres)
-	tones=['study', 'dance', 'happy', 'sad', 'melancoly', 'fun', 'angry', 'calming',]	
+	tones=['study', 'dance', 'happy', 'sad', 'melancholy', 'fun', 'angry', 'calming',]	
 	tone=toneSelect(tones)
 	criteria=loadCriteria(tone)
 	length=int(raw_input("Number of songs in playlist: "))
 	songs = []
-	song_min=0
-	song_min_name=''
 	for genre in genres:
 		for song in genreInfo[genre]:
 			score=songSelect(song, criteria)
-			if score and len(songs)<=length and (score, song) not in songs:
+			if score and len(songs)<length and (score, song) not in songs:
 				song.score = score
 				heapq.heappush(songs, (score, song))
 			elif score:
 				del songs[-1]
+				heapq.heappush(songs, (score, song))
 				heapq.heapify(songs)
 	return songs
 
@@ -103,15 +102,15 @@ def genreCutting(genres):
         	if genre=='o':
                 	for item in genres:
                         	print item
-                elif genre not in genres:
-			print '\nGenre not in list\n'
 		elif genre=='l':
-			for item in removed_genre:
+			for item in removed_genres:
 				print item
 		elif genre=='r':
-			for item in removed_genre:
-				genres.append()
-			removed_genre=[]
+			for item in removed_genres:
+				genres.append(item)
+			removed_genres=[]
+		elif genre not in genres:
+                        print '\nGenre not in list\n'
 		else:
 			genres.remove(genre)
 			removed_genres.append(genre)
@@ -153,26 +152,26 @@ def toneSelect(tones):
 def loadCriteria(tone):
 	criteria={}
 	if tone=='study':
-		criteria['acoust']=0.700
-		criteria['dance']=0.100
-		criteria['speech']=0.100
-		criteria['energy']=0.200
-		criteria['loud']=-30
-		criteria['valence']=0.100
+		criteria['acoust']=[2, 0.700]
+		criteria['dance']=[1, 0.100]
+		criteria['speech']=[2, 0.100]
+		criteria['energy']=[4, 0.200]
+		criteria['loud']=[0,-30]
+		criteria['valence']=[2, 0.100]
 	elif tone=='dance':
-		criteria['acoust']=0.05
-                criteria['dance']=0.500
-		criteria['speech']=0.100
-                criteria['energy']=0.850
-                criteria['loud']=-5
-                criteria['valence']=0.500
+		criteria['acoust']=[1, 0.05]
+                criteria['dance']=[3,0.500]
+		criteria['speech']=[1, 0.100]
+                criteria['energy']=[4,0.850]
+                criteria['loud']=[0, -5]
+                criteria['valence']=[2, 0.500]
 	elif tone=='happy':
-		criteria['acoust']=0.005
-                criteria['dance']=0.400
-		criteria['speech']=0.100
-                criteria['energy']=0.500
-                criteria['loud']=10
-                criteria['valence']=0.2
+		criteria['acoust']=[1, 0.005]
+                criteria['dance']=[1, 0.400]
+		criteria['speech']=[2, 0.100]
+                criteria['energy']=[3, 0.500]
+                criteria['loud']=[0, 10]
+                criteria['valence']=[4,0.4]
 	elif tone=='sad':
 		criteria['acoust']=[1, 0.400]
                 criteria['dance']=[1, 0.200]
@@ -180,34 +179,34 @@ def loadCriteria(tone):
                 criteria['energy']=[2, 0.150]
                 criteria['loud']=[0, -10]
                 criteria['valence']=[5, 0.100]
-	elif tone=='melancoly':
-		criteria['acoust']=0
-                criteria['dance']=0
-		criteria['speech']=0.100
-                criteria['energy']=0
-                criteria['loud']=0
-                criteria['valence']=0
+	elif tone=='melancholy':
+		criteria['acoust']=[1, 0.700]
+                criteria['dance']=[1, 0.450]
+		criteria['speech']=[1, 0.020]
+                criteria['energy']=[1, 0.400]
+                criteria['loud']=[0, -10]
+                criteria['valence']=[4, 0.200]
 	elif tone=='fun':
-		criteria['acoust']=0
-                criteria['dance']=0
-		criteria['speech']=0.100
-                criteria['energy']=0
-                criteria['loud']=0
-                criteria['valence']=0
+		criteria['acoust']=[0, 0.050]
+                criteria['dance']=[2, 0.500]
+		criteria['speech']=[1, 0.100]
+                criteria['energy']=[3, 0.800]
+                criteria['loud']=[0, -7]
+                criteria['valence']=[4, 0.600]
 	elif tone=='angry':
-		criteria['acoust']=0.005
-                criteria['dance']=0.400
-		criteria['speech']=0.100
-                criteria['energy']=0.900
-                criteria['loud']=-5
-                criteria['valence']=0.300
+		criteria['acoust']=[1, 0.005]
+                criteria['dance']=[2, 0.400]
+		criteria['speech']=[2, 0.100]
+                criteria['energy']=[4, 0.900]
+                criteria['loud']=[0, -5]
+                criteria['valence']=[2,0.300]
 	elif tone=='calming':
-		criteria['acoust']=0
-                criteria['dance']=0
-		criteria['speech']=0.100
-                criteria['energy']=0
-                criteria['loud']=0
-                criteria['valence']=0
+		criteria['acoust']=[1, 0.600]
+                criteria['dance']=[2, 0.100]
+		criteria['speech']=[1, 0.100]
+                criteria['energy']=[2, 0.200]
+                criteria['loud']=[0, -15]
+                criteria['valence']=[4, 0.100]
 	total=0
 	for key in criteria.keys():
 		total+=criteria[key][0]*criteria[key][1]
@@ -240,9 +239,7 @@ def songSelect(song, criteria):
         if value>0.5:
                 return 0
         total+=value
-	if abs(criteria['total']-total)<1:
-		return total
-	return 0
+	return abs(criteria['total']-total)
 
 def push_playlist(songs, token):
 	sp = spotipy.Spotify(auth=token)
