@@ -82,12 +82,13 @@ def getTrackInfo(token):
 	
 	return genreSong
 
-def filterSongs(genreInfo, tone, number):
+def filterSongs(genres, tone, number):
 	criteria=loadCriteria(tone)
+	songs=[]
 	for genre in genres:
 		for song in genreInfo[genre]:
 			score=songSelect(song, criteria)
-			if score and len(songs)<length and (score, song) not in songs:
+			if score and len(songs)<number and (score, song) not in songs:
 				song.score = score
 				heapq.heappush(songs, (score, song))
 			elif score:
@@ -216,11 +217,16 @@ font = pygame.font.SysFont("times", 19)
 checkbox_x = 100
 checkbox_y = 100
 checkbox_size = 10
-checkbox_thickness = 10	
+checkbox_thickness = 10
 # Get ready to launch program
+
 run_spotify = True
 
-genreInfo={}
+genreInfo = {}
+songInfo = {}
+tone='study'
+number=15
+print "authorization passed"
 # Begin program
 while run_spotify:
 	#Basic setup of background
@@ -229,6 +235,9 @@ while run_spotify:
 	names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
 	screen.blit(names_text, (240, 625))
 	pygame.display.flip();
+	print "Getting songs"
+	genreInfo = getTrackInfo(token)
+	print "Got songs"
 	events = pygame.event.get()
 	clicked_begin_screen = False
 	# Click screen to get started!
@@ -258,7 +267,6 @@ while run_spotify:
 		
 		# Include text descriptions -- genres
 		temp = int(120)
-		genreInfo = getTrackInfo(token)
 		for genre in genreInfo.keys():
 			genres_text = font.render(genre, 1, (255, 255, 0))
 			screen.blit(genres_text, (checkbox_x + 30, checkbox_y + temp))
@@ -301,7 +309,7 @@ while run_spotify:
 						print ""
 		
 		
-		clicked_begin_screen = false
+		clicked_begin_screen = False
 	
 	# Reset screen for new "results screen" page
 	screen.blit(background, (0, 0))
@@ -313,7 +321,7 @@ while run_spotify:
 	checkbox_y = 150
 	
 	# Run the function to get the recommended songs
-	songs = filterSongs(genreInfo)
+	songs = filterSongs(genreInfo, tone, number)
 	
 	# "Results screen" pops out to display the results
 	while results_screen:
@@ -330,15 +338,15 @@ while run_spotify:
 		# Display checkbox -- decision to push playlist or not
 		pygame.draw.rect(reset_background, (255, 51, 51), (checkbox_x, checkbox_y, checkbox_size, checkbox_size), checkbox_thickness*2)
 		pygame.draw.rect(reset_background, (255, 51, 51), (checkbox_x, checkbox_y+20, checkbox_size, checkbox_size), checkbox_thickness*2)
-		screen.blit(black_background, (0, 0))
+		screen.blit(background, (0, 0))
 		logo = pygame.image.load("logo.jpg")
 		screen.blit(logo, (650, 650))
 		
 		decision_text_yes = font.render("Yes", 1, (255, 255, 0))
 		decision_text_no = font.render("No", 1, (255, 255, 0))
 		
-		screen.blit(decision_text_yes, (checkbox_x + 15, checkbox_y, checkbox_size, checkbox_size), checkbox_thickness*2)
-		screen.blit(decision_text_no, (checkbox_x + 15, checkbox_y+20, checkbox_size, checkbox_size), checkbox_thickness*2)
+		screen.blit(decision_text_yes, (checkbox_x + 15, checkbox_y))
+		screen.blit(decision_text_no, (checkbox_x + 15, checkbox_y+20))
 		
 		# Actually display everything
 		pygame.display.flip()
