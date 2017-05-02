@@ -235,9 +235,7 @@ while run_spotify:
 	names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
 	screen.blit(names_text, (240, 625))
 	pygame.display.flip();
-	print "Getting songs"
 	genreInfo = getTrackInfo(token)
-	print "Got songs"
 	events = pygame.event.get()
 	clicked_begin_screen = False
 	# Click screen to get started!
@@ -309,7 +307,7 @@ while run_spotify:
 						print ""
 		
 		
-		clicked_begin_screen = False
+		clicked_begin_screen = True
 	
 	# Reset screen for new "results screen" page
 	screen.blit(background, (0, 0))
