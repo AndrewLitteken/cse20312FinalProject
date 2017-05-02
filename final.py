@@ -287,7 +287,8 @@ font = pygame.font.SysFont("times", 19)
 checkbox_x = 100
 checkbox_y = 100
 checkbox_size = 10
-checkbox_thickness = 10	
+checkbox_thickness = 10
+genreInfo = {}	
 # Get ready to launch program
 run_spotify = True
 
