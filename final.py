@@ -218,10 +218,6 @@ checkbox_x = 100
 checkbox_y = 100
 checkbox_size = 10
 checkbox_thickness = 10
-<<<<<<< HEAD
-genreInfo = {}	
-=======
->>>>>>> f5dcaae0381561ab74433fdfd46f00a8780910e7
 # Get ready to launch program
 
 run_spotify = True
