@@ -45,7 +45,6 @@ def getTrackInfo(token):
 	
 	offset = 0
 	count = 50
-	print '\nCollecting Tracks...'
 	genreSong={}
 	genreArtist={}
 	
@@ -80,26 +79,11 @@ def getTrackInfo(token):
                 	song.speech= feature['speechiness']
                 	song.loud = feature['loudness']
                 	song.valence = feature['valence']	
-		if offset%100==0 and count==50:
-			print str(offset)+' tracks collected...'
 	
-	print 'Collection of '+str(offset-50+count)+' tracks complete'
 	return genreSong
 
-def filterSongs(genreInfo):
-	genres=[]
-	inex=raw_input('\nSelect genres to include or exclude? I or E: ')
-	for item in genreInfo.keys():
-                genres.append(item)
-	if inex.lower()=='e':	
-		genres=genreCutting(genres)
-	else:
-		genres=genreAdding(genres)
-	tones=['study', 'dance', 'happy', 'sad', 'melancholy', 'fun', 'angry', 'calming',]	
-	tone=toneSelect(tones)
+def filterSongs(genreInfo, tone, number):
 	criteria=loadCriteria(tone)
-	length=int(raw_input("Number of songs in playlist: "))
-	songs = []
 	for genre in genres:
 		for song in genreInfo[genre]:
 			score=songSelect(song, criteria)
@@ -111,61 +95,6 @@ def filterSongs(genreInfo):
 				heapq.heappush(songs, (score, song))
 				heapq.heapify(songs)
 	return songs
-
-def genreCutting(genres):
-	genre=raw_input('\nAre there genres you would like to exclude? (Enter "o" to see options, "l" to see what has been removed, "r" to start over, and "n" to end input): ') 
-	removed_genres=[]
-	genre=genre.lower()
-	while genre!='n':
-        	if genre=='o':
-                	for item in genres:
-                        	print item
-		elif genre=='l':
-			for item in removed_genres:
-				print item
-		elif genre=='r':
-			for item in removed_genres:
-				genres.append(item)
-			removed_genres=[]
-		elif genre not in genres:
-                        print '\nGenre not in list\n'
-		else:
-			genres.remove(genre)
-			removed_genres.append(genre)
-		genre=raw_input('Next genre: ')
-                genre=genre.lower()
-	return genres
-
-def genreAdding(genres):
-	genre=raw_input('\nAre there genres you would like to include? (Enter "o" to see options, "l" for current list, "c" to clear, and "n" to end input): ')
-	genre=genre.lower()
-	new_genres=[]
-	while genre!='n':
-                if genre=='o':
-                        for item in genres:
-                                print item
-                elif genre=='l':
-                        for item in new_genres:
-                                print item
-                elif genre=='c':
-                        new_genres=[]  
-                elif genre not in genres:
-                        print '\nGenre not in list\n'
-		else:
-                        if genre not in new_genres:
-				new_genres.append(genre)
-        	genre=raw_input('Next genre: ')
-                genre=genre.lower()
-	return new_genres
-
-def toneSelect(tones):
-	print '\nThe available tones are: '
-	for tone in tones:
-		print tone
-	tone = raw_input('\nEnter your desired tone: ').lower()
-	while tone not in tones:
-		tone=raw_input('Not valid tone, enter again: ').lower()
-	return tone 
 
 def loadCriteria(tone):
 	criteria={}
@@ -291,6 +220,7 @@ checkbox_thickness = 10
 # Get ready to launch program
 run_spotify = True
 
+genreInfo={}
 # Begin program
 while run_spotify:
 	#Basic setup of background
@@ -376,7 +306,7 @@ while run_spotify:
 	# Reset screen for new "results screen" page
 	screen.blit(background, (0, 0))
 	reset_background = pygame.image.load("black_screen.jpg")
-	screen.blit(black_background, (0, 0))
+	screen.blit(background, (0, 0))
 	pygame.display.flip();
 	results_screen = True
 	checkbox_x = 150
