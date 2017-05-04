@@ -90,13 +90,17 @@ def filterSongs(genres, tone, number):
 	for genre in genres:
 		for song in genres[genre]:
 			score=songSelect(song, criteria)
-			if score and len(songs)<number and (score, song) not in songs:
-				song.score = score
-				heapq.heappush(songs, (score, song))
-			elif score and score<songs[-1][0] and (score, song) not in songs:
-				del songs[-1]
-				heapq.heappush(songs, (score, song))
-				heapq.heapify(songs)
+			# Andrew, I edited it like this so that there can never be repeats
+			# If the error is persistent, it means that for the same song, 
+			# there are multiple scores possible
+			if (score, song) not in songs:
+				if score and len(songs)<number:
+					song.score = score
+					heapq.heappush(songs, (score, song))
+				elif score and score<songs[-1][0]:
+					del songs[-1]
+					heapq.heappush(songs, (score, song))
+					heapq.heapify(songs)
 	return songs
 
 def loadCriteria(tone):
