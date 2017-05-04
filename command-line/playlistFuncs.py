@@ -88,7 +88,7 @@ def filterSongs(genreInfo):
 			if score and len(songs)<length and (score, song) not in songs:
 				song.score = score
 				heapq.heappush(songs, (score, song))
-			elif score:
+			elif score and score<songs[-1][0] and (score, song) not in songs:
 				del songs[-1]
 				heapq.heappush(songs, (score, song))
 				heapq.heapify(songs)

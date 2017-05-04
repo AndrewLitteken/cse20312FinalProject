@@ -86,12 +86,12 @@ def filterSongs(genres, tone, number):
 	criteria=loadCriteria(tone)
 	songs=[]
 	for genre in genres:
-		for song in genreInfo[genre]:
+		for song in genres[genre]:
 			score=songSelect(song, criteria)
 			if score and len(songs)<number and (score, song) not in songs:
 				song.score = score
 				heapq.heappush(songs, (score, song))
-			elif score:
+			elif score and score<songs[-1][0] and (score, song) not in songs:
 				del songs[-1]
 				heapq.heappush(songs, (score, song))
 				heapq.heapify(songs)
@@ -226,27 +226,32 @@ genreInfo = {}
 songInfo = {}
 tone='study'
 number=15
+background = pygame.image.load("spotify.jpg")
+screen.blit(background, (160, 150))
+names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
+collection_text = font.render("Music collection complete, Click to begin", 1, (255, 255, 0))
+screen.blit(names_text, (240, 625))
+screen.blit(collection_text, (160, 725))
+pygame.display.flip()
+pygame.time.wait(1000)
 print "authorization passed"
 # Begin program
+#Basic setup of background
+genreInfo = getTrackInfo(token)
 while run_spotify:
-	#Basic setup of background
-	background = pygame.image.load("spotify.jpg")
-	screen.blit(background, (160, 150))
-	names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
-	screen.blit(names_text, (240, 625))
-	pygame.display.flip();
-	genreInfo = getTrackInfo(token)
 	events = pygame.event.get()
 	clicked_begin_screen = False
 	# Click screen to get started!
-	for event in events:
-		if event.type == pygame.MOUSEBUTTONDOWN:
+	while not clicked_begin_screen:
+		for event in pygame.event.get():
+			if event.type == pygame.MOUSEBUTTONDOWN:
 				clicked_begin_screen = True
-				black_background = pygame.image.load("black_screen.jpg")
-				screen.blit(black_background, (0, 0))
-				pygame.display.flip();
-	while clicked_begin_screen:
-		event = pygame.event.poll()
+	
+	black_background = pygame.image.load("black_screen.jpg")
+	screen.blit(black_background, (0, 0))
+	pygame.display.flip();
+	selectionMade = False
+	while not selectionMade:
 		# Draw Checkbox Rectangles
 		pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y, checkbox_size, checkbox_size), checkbox_thickness*2)
 		pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y+20, checkbox_size, checkbox_size), checkbox_thickness*2)
@@ -262,7 +267,9 @@ while run_spotify:
 			tones_text = font.render(tone, 1, (255, 255, 51))
 			screen.blit(tones_text, (checkbox_x + 30, checkbox_y + temp))
 			temp+= int(20)
-		
+	
+		done_button = font.render("Done", 1, (255, 255, 255))
+		screen.blit(done_button, (700, 100))	
 		# Include text descriptions -- genres
 		temp = int(120)
 		for genre in genreInfo.keys():
@@ -272,11 +279,15 @@ while run_spotify:
 				
 		# Display all
 		pygame.display.flip()
+		selectionMade = False
 		events = pygame.event.get()
 		
 		for event in events:
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				x, y = pygame.mouse.get_pos()
+				print "x: "+str(x)+" y: "+str(y)
+				if x > 600 and y > 90 and y < 120:
+					selectionMade = True
 				if x > checkbox_x and x < checkbox_x + checkbox_size:
 					if y > checkbox_y and y < checkbox_y + 30:
 						# tone = 'study'
@@ -307,7 +318,6 @@ while run_spotify:
 						print ""
 		
 		
-		clicked_begin_screen = True
 	
 	# Reset screen for new "results screen" page
 	screen.blit(background, (0, 0))
@@ -327,11 +337,6 @@ while run_spotify:
 		num = int(1)
 		
 		# Display recommended songs to user
-		for song in songInfo.keys():
-			songs_text = font.render(genre, 1, (255, 255, 0))
-			screen.blit(str(num) + songs_text, (checkbox_x + 30, checkbox_y + temp))
-			temp+=int(20)
-			num+=int(1)
 		
 		# Display checkbox -- decision to push playlist or not
 		pygame.draw.rect(reset_background, (255, 51, 51), (checkbox_x, checkbox_y, checkbox_size, checkbox_size), checkbox_thickness*2)
@@ -340,6 +345,12 @@ while run_spotify:
 		logo = pygame.image.load("logo.jpg")
 		screen.blit(logo, (650, 650))
 		
+		for song in songs:
+			songs_text = font.render(str(num)+song[1].name, 1, (255, 255, 0))
+			screen.blit(songs_text, (checkbox_x + 30, checkbox_y + temp))
+			temp+=int(20)
+			num+=int(1)
+	
 		decision_text_yes = font.render("Yes", 1, (255, 255, 0))
 		decision_text_no = font.render("No", 1, (255, 255, 0))
 		
