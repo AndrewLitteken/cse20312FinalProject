@@ -71,16 +71,17 @@ def getTrackInfo(token):
 		features = sp.audio_features(tracks)
 		for index, song in enumerate(songs):
 			feature = features[index]
-			for genre in genreArtist[song.art]:
-                        	if genre not in genreSong:
-                                	genreSong[genre]=set()
-                        	genreSong[genre].add(song)
 			song.acoust = feature['acousticness']	
 			song.dance = feature['danceability']
-                	song.energy = feature['energy']
-                	song.speech= feature['speechiness']
-                	song.loud = feature['loudness']
-                	song.valence = feature['valence']	
+			song.energy = feature['energy']
+			song.speech = feature['speechiness']
+			song.loud = feature['loudness']
+			song.valence = feature['valence']
+			
+			for genre in genreArtist[song.art]:	
+				if genre not in genreSong:
+					genreSong[genre]=set()
+			genreSong[genre].add(song)
 	
 	return genreSong
 
@@ -351,36 +352,29 @@ while run_spotify:
 					space = 15
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
 						if y > checkbox_y and y < checkbox_y + space*1:
-							tone = ''
-							tone += 'study'
+							tone = 'study'
 						elif y > checkbox_y + space*2 and y < checkbox_y + space*3:
-							tone = ''
-							tone += 'dance'
+							tone = 'dance'
 						elif y > checkbox_y + space*4 and y < checkbox_y + space*5:
-							tone = ''
-							tone += 'happy'
+							tone = 'happy'
 						elif y > checkbox_y + space*6 and y < checkbox_y + space*7:
-							tone = ''
-							tone += 'sad'
+							tone = 'sad'
 						elif y > checkbox_y + space*8 and y < checkbox_y + space*9:
-							tone = ''
-							tone += 'melancholy'
+							tone = 'melancholy'
 						elif y > checkbox_y + space*10 and y < checkbox_y + space*11:
-							tone = ''
 							tone += 'fun'
 						elif y > checkbox_y + space*12 and y < checkbox_y + space*13:
-							tone = ''
 							tone += 'angry'
 						elif y > checkbox_y + space*14 and y < checkbox_y + space*15:
-							tone = ''
-							tone += 'game'
+							tone += 'calming'
+							print(tone)
 							
 					# User selects a genre
 					counter = 16
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
-					for genre in genreInfo.keys():
-						if y > checkboy_y + space*counter and y < checkbox_y + space*(counter+1):
-							genres_dict[genre] = genre
+						for genre in genreInfo.keys():
+							if y > checkbox_y + space*counter and y < checkbox_y + space*(counter+1):
+								genres_dict[genre] = genreInfo[genre]
 							
 		# Get out of "Selection screen"
 		selectionMade = True
@@ -403,19 +397,7 @@ while run_spotify:
 	songs = filterSongs(genreInfo, tone, number)
 	  
 	while not done_looking:
-		# Draw a "done" button so that user can progress to next "Analysis" page!
-		done_button = font.render("Done", 1, (255, 255, 255))
 		
-		# Blit the "done" button to screen
-		screen.blit(done_button, (700, 100))
-			
-		# Display recommended songs to user
-		y_spacer = int(15)
-		counter = int(0)
-		for song in songs:
-			songs_text = font.render(str(counter)+song[1].name, 1, (128, 255, 0))
-			screen.blit(songs_text, (checkbox_x + 30, checkbox_y + y_spacer))
-			counter += int(15)
 		
 		# Reconfigure checkbox_x and checkbox_y
 		checkbox_x = 500
@@ -427,27 +409,39 @@ while run_spotify:
 		
 		# Blit yes/no checkboxes to screen
 		screen.blit(black_background, (0, 0))
-		
+		# Draw a "done" button so that user can progress to next "Analysis" page!
+		done_button = font.render("Done", 1, (255, 255, 255))
+		# Blit the "done" button to screen
+		screen.blit(done_button, (350, 600))
 		# Include text for yes/no checkboxes
 		yes_checkbox_t = font.render("Yes", 1, (0, 0, 255))
 		no_checkbox_t = font.render("No", 1, (255, 0, 0))
-		
+
+		# Display recommended songs to user
+		y_spacer = int(15)
+		counter = int(0)
+		for song in songs:
+			songs_text = font.render(str(counter)+song[1].name, 1, (128, 255, 0))
+			screen.blit(songs_text, (checkbox_x + 30, checkbox_y + y_spacer))
+			counter += int(15)
+			
 		# Blit yes/no text to screen
-		screen.blit(yes_checkbox_t, (checkbox_x + 15, checkbox_y))
-		screen.blit(no_checkbox_t, (checkbox_x + 15, checkbox_y+20))
+		screen.blit(yes_checkbox_t, (checkbox_x + 20, checkbox_y-10))
+		screen.blit(no_checkbox_t, (checkbox_x + 20, checkbox_y-10))
 		
 		# Include instructions
-		instructions_text = font.render("Choose to either push or not push these songs into a playlist in your account then press 'Done'", 1, (255, 255, 0))
+		instructions_text = font.render("Choose to either push or not push these songs into a playlist", 1, (255, 255, 0))
+		instructions2_text=font.render("in your account then press 'Done'", 1, (255, 255, 0))
 		
 		# Blit instructions to screen
-		screen.blit(instructions_text, (45, 45)) 
+		screen.blit(instructions_text, (45, 45))
+		screen.blit(instructions2_text, (45, 90)) 
 		
 		# Actually display everything -- "done" button, the yes/no texts, the yes/no checkboxes
 		pygame.display.flip()
 		
 		# Prepare to understand user input
 		push_decision_made = False
-		events = pygame.event.get();
 		
 		while not push_decision_made:
 			for event in pygame.event.get():
@@ -459,7 +453,7 @@ while run_spotify:
 							push_playlist(songs, token)
 															
 					# User presses the "done button"
-					if x > 600 and y > 90 and y < 120:
+					if x > 350 and x<400 and y > 590 and y < 620:
 						push_decision_made = True
 		
 		# Get out of while loop if User is done looking at songs
@@ -485,7 +479,7 @@ while run_spotify:
 	# Screen blit all -- our images, and thank you text
 	screen.blit(maru_choi, (150, 150))
 	screen.blit(jin_kim, (300, 300))
-	screen.blit(andrew_litteken(450, 450))
+	screen.blit(andrew_litteken, (450, 450))
 	screen.blit(thankyou_text, (0, 0))
 	
 	# Display the final "Thank you" screen -- our images and thank you text
