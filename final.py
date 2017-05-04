@@ -300,12 +300,13 @@ while run_spotify:
 		for tone in tones:
 			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
 			y_spacer += int(15)	
+		screen.blit(black_background, (0, 0))
 		
 		# Include text descriptions -- tones
 		y_spacer = int(0)
 		for tone in tones:
 			tones_text = font.render(tone, 1, (255, 225, 0))
-			screen.blit(tones_text, (checkbox_x + 20, checkbox_y + y_spacer))
+			screen.blit(tones_text, (checkbox_x + 15, checkbox_y + y_spacer))
 			y_spacer += int(15)
 			
 		# Draw checkboxes for the genres!
@@ -314,12 +315,13 @@ while run_spotify:
 		for genre in genreInfo.keys():
 			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
 			y_spacer += int(15)			
-			
+		screen.blit(black_background, (0, 0))
+	
 		# Include text descriptions -- genres
 		y_spacer = temp_y_spacer
 		for genre in genreInfo.keys():
 			genres_text = font.render(genre, 1, (255, 255, 0))
-			screen.blit(genres_text, (checkbox_x + 20, checkbox_y + y_spacer))
+			screen.blit(genres_text, (checkbox_x + 15, checkbox_y + y_spacer))
 			y_spacer += int(15)
 			
 		# Draw a "done" button so that user can progress to next "Analysis" page!
