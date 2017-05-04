@@ -221,7 +221,7 @@ token = getAuth('user-library-read playlist-modify-private', username)
 pygame.init()
 
 # Begin background formatting
-screen = pygame.display.set_mode((800, 800))
+screen = pygame.display.set_mode((1200, 1200))
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 pygame.display.set_caption('Spotify Playlist')
@@ -282,7 +282,7 @@ while run_spotify:
 	
 	# Blit the black_background to actual PyGame area
 	screen.blit(black_background, (0, 0))
-	screen.blit(logo, (650, 650))
+	screen.blit(logo, (1150, 1150))
 	screen.blit(instructions_text, (45, 45))
 	
 	# Display the screen
