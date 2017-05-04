@@ -221,7 +221,7 @@ token = getAuth('user-library-read playlist-modify-private', username)
 pygame.init()
 
 # Begin background formatting
-screen = pygame.display.set_mode((1200, 1200))
+screen = pygame.display.set_mode((1200, 800))
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 pygame.display.set_caption('Spotify Playlist')
@@ -230,8 +230,10 @@ pygame.display.set_caption('Spotify Playlist')
 font = pygame.font.SysFont("times", 19)
 checkbox_x = 100
 checkbox_y = 100
+tone_startx = 700
+tone_starty = 200
 checkbox_size = 15
-checkbox_thickness = 5
+checkbox_thickness = 1
 
 # Create and assign default variables for the user
 tone = 'study'
@@ -296,22 +298,39 @@ while run_spotify:
 		# Establish tones for user to select:
 		tones = ['study', 'dance', 'happy', 'sad', 'melancholy', 'fun', 'angry', 'calming']
 		
-		# Draw checkboxes/text for the tones!
+		# Draw checkbox for the tones/genres!
 		y_spacer = int(0)
 		for tone in tones:
-			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
-			tones_text = font.render(tone, 1, (255, 225, 0))
-			screen.blit(tones_text, (checkbox_x + 15, checkbox_y + y_spacer))
+			pygame.draw.rect(black_background, (255, 51, 51), (tone_startx, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
+			screen.blit(black_background, (0, 0))
 			y_spacer += int(15)
 		
-		# Draw checkboxes/text for the genres!
-		temp_y_spacer = y_spacer
-		y_spacer = int(0)
+		side_increment=0	
 		for genre in genreInfo.keys():
-			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
+			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x + side_increment, checkbox_y+y_spacer, checkbox_size, checkbox_size), 
+			checkbox_thickness*2)
+			screen.blit(black_background, (0, 0))
+			y_spacer += int(15)
+			if checkbox_y + y_spacer > 800:
+				y_spacer = 0
+				side_increment += 50
+		
+		# Draw text for the genres!		
+		y_spacer = int(0)
+		for tone in tones:
+			tones_text = font.render(tone, 1, (255, 225, 0))
+			screen.blit(tones_text, (tone_startx + 15, tone_starty + y_spacer))
+			y_spacer += int(15)
+		
+		side_increment =  0
+		for genre in genreInfo.keys():
 			genres_text = font.render(genre, 1, (255, 255, 0))
-			screen.blit(genres_text, (checkbox_x + 15, checkbox_y + y_spacer))
-			y_spacer += int(15)			
+			screen.blit(genres_text, (checkbox_x + 15 + side_increment, checkbox_y + y_spacer))
+			y_spacer+=15
+			if checkbox_y + y_spacer + 15 > 800:	
+				y_spacer = 0
+				side_increment += 50
+							
 	
 		# Draw a "done" button so that user can progress to next "Analysis" page!
 		done_button = font.render("Done", 1, (255, 255, 255))
@@ -341,30 +360,32 @@ while run_spotify:
 
 					# User selects a tone
 					space = 15
-					if x > checkbox_x and x < checkbox_x + checkbox_size:
-						if y > checkbox_y and y < checkbox_y + space*1:
+					if x > tone_startx and x < tone_startx + checkbox_size:
+						if y > tone_starty and y < tone_starty + space*1:
 							tone = 'study'
-						elif y > checkbox_y + space*2 and y < checkbox_y + space*3:
+						elif y > tone_starty + space*2 and y < tone_starty + space*3:
 							tone = 'dance'
-						elif y > checkbox_y + space*4 and y < checkbox_y + space*5:
+						elif y > tone_starty + space*4 and y < tone_starty + space*5:
 							tone = 'happy'
-						elif y > checkbox_y + space*6 and y < checkbox_y + space*7:
+						elif y > tone_starty + space*6 and y < tone_starty + space*7:
 							tone = 'sad'
-						elif y > checkbox_y + space*8 and y < checkbox_y + space*9:
+						elif y > tone_starty + space*8 and y < tone_starty + space*9:
 							tone = 'melancholy'
-						elif y > checkbox_y + space*10 and y < checkbox_y + space*11:
+						elif y > tone_starty + space*10 and y < tone_starty + space*11:
 							tone += 'fun'
-						elif y > checkbox_y + space*12 and y < checkbox_y + space*13:
+						elif y > tone_starty + space*12 and y < tone_starty + space*13:
 							tone += 'angry'
-						elif y > checkbox_y + space*14 and y < checkbox_y + space*15:
+						elif y > tone_starty + space*14 and y < tone_starty + space*15:
 							tone += 'calming'
 							print(tone)
 							
 					# User selects a genre
-					counter = 16
-					if x > checkbox_x and x < checkbox_x + checkbox_size:
-						for genre in genreInfo.keys():
-							if y > checkbox_y + space*counter and y < checkbox_y + space*(counter+1):
+					side_increment = 0
+					for index, genre in enumerate(genreInfo.keys()):
+						if checkbox_y + space*index > 800:
+							side_increment += int(50)
+						if x > checkbox_x + side_increment and x < checkbox_x + checkbox_size + side_increment:
+							if y > checkbox_y + space*index and y < checkbox_y + space*(index+1):
 								genres_dict[genre] = genreInfo[genre]
 							
 		# Get out of "Selection screen"
@@ -408,17 +429,22 @@ while run_spotify:
 		yes_checkbox_t = font.render("Yes", 1, (0, 0, 255))
 		no_checkbox_t = font.render("No", 1, (255, 0, 0))
 
+		#
+		song_startx = 100
+		song_starty = 100
+
 		# Display recommended songs to user
-		y_spacer = int(15)
+		y_spacer = int(0)
 		counter = int(0)
 		for song in songs:
-			songs_text = font.render(str(counter)+song[1].name, 1, (128, 255, 0))
-			screen.blit(songs_text, (checkbox_x + 30, checkbox_y + y_spacer))
-			counter += int(15)
+			songs_text = font.render(str(counter)+". "+song[1].name, 1, (128, 255, 0))
+			screen.blit(songs_text, (song_startx + 30, song_starty + y_spacer))
+			counter += int(1)
+			y_spacer += int(15)
 			
 		# Blit yes/no text to screen
-		screen.blit(yes_checkbox_t, (checkbox_x + 20, checkbox_y-10))
-		screen.blit(no_checkbox_t, (checkbox_x + 20, checkbox_y-10))
+		screen.blit(yes_checkbox_t, (checkbox_x + 15, checkbox_y))
+		screen.blit(no_checkbox_t, (checkbox_x + 15, checkbox_y + 15))
 		
 		# Include instructions
 		instructions_text = font.render("Choose to either push or not push these songs into a playlist", 1, (255, 255, 0))
