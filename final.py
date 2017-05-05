@@ -246,14 +246,14 @@ genreInfo = {}
 # Get ready to launch program
 run_spotify = True
 background = pygame.image.load("spotify.jpg")
-background = pygame.transform.scale(background, (400, 400))
+background = pygame.transform.scale(background, (600, 271))
 names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
 collection_text = font.render("Music collection complete, Click to begin", 1, (255, 255, 0))
 
 # Blit main (opening) screen to display
-screen.blit(background, (400, 200))
-screen.blit(names_text, (200, 625))
-screen.blit(collection_text, (200, 725))
+screen.blit(background, (350, 200))
+screen.blit(names_text, (350, 625))
+screen.blit(collection_text, (405, 725))
 
 # Display the main (opening) screen 
 pygame.display.flip()
@@ -442,7 +442,7 @@ while run_spotify:
 		# Blit the "done" button to screen
 		screen.blit(done_button, (520, 700))
 		# Include text for yes/no checkboxes
-		yes_checkbox_t = font.render("Yes", 1, (0, 0, 255))
+		yes_checkbox_t = font.render("Push Playlist to Spotify", 1, (255, 255, 255))
 
 		# Initial song positions
 		song_startx = 100
