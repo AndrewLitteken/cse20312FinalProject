@@ -216,14 +216,8 @@ def push_playlist(songs, token):
 
 # Begin Program
 
-# Enter Spotify username here
-username = "andrewlitteken"
-
-# Retrieve User Information
-
-token = getAuth('user-library-read playlist-modify-private', username)
-
 # Initialize pygame
+
 pygame.init()
 
 # Begin background formatting
@@ -231,9 +225,25 @@ screen = pygame.display.set_mode((1200, 800))
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 pygame.display.set_caption('Spotify Playlist')
-
 # Create and assign useful variables
 font = pygame.font.SysFont("times", 19)
+
+background = pygame.image.load("spotify.jpg")
+background = pygame.transform.scale(background, (600, 271))
+names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
+collection_text = font.render("Collecting Music...", 1, (255, 255, 0))
+
+screen.blit(background, (315, 200))
+screen.blit(names_text, (350, 475))
+screen.blit(collection_text, (475, 725))
+
+pygame.display.flip()
+
+# Enter Spotify username here
+username = raw_input("Enter your Username: ")
+
+# Retrieve User Information
+token = getAuth('user-library-read playlist-modify-private', username)
 
 # Create and assign default variables for the user
 tone = 'study'
@@ -242,6 +252,19 @@ number = 15
 # Create and assign useful data structures
 songInfo = {}
 genreInfo = {}
+
+# Retrieve genre information based on the token -- the key to the username's Spotify account!
+genreInfo = getTrackInfo(token)
+
+# Refresh background -- black_background will "refresh" screen by drawing over
+black_background = pygame.image.load("black_screen.jpg")
+	
+# Blit the black_background to actual PyGame area
+screen.blit(black_background, (0, 0))
+	
+# Display the screen
+pygame.display.flip();
+
 
 # Get ready to launch program
 run_spotify = True
@@ -258,8 +281,7 @@ screen.blit(collection_text, (405, 725))
 # Display the main (opening) screen 
 pygame.display.flip()
 
-# Retrieve genre information based on the token -- the key to the username's Spotify account!
-genreInfo = getTrackInfo(token)
+
 
 # While screen has not been clicked
 clicked_begin_screen = False
@@ -482,7 +504,7 @@ while run_spotify:
 	pygame.display.flip();
 	
 	# Run the function to get the recommended songs
-	songs = filterSongs(genreInfo, tone, number)
+	songs = filterSongs(genres_dict, tone, number)
 	
 	while not done_looking:
 		
