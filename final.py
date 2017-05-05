@@ -39,39 +39,39 @@ class Song:
 
 # Creating the functions for proper data-analysis
 def getAuth(scope, username):
-	token = util.prompt_for_user_token(username, scope)
-	return token
+	token = util.prompt_for_user_token(username, scope) # Get the token necessary
+	return token # Return the token
 
 def getTrackInfo(token):
-	sp = spotipy.Spotify(auth=token)
+	sp = spotipy.Spotify(auth=token) # create spotify object
 	
-	offset = 0
-	count = 50
-	genreSong={}
-	genreArtist={}
+	offset = 0 # Offset for collection
+	count = 50 # number of songs collected
+	genreSong={} # dictionary of song info by genre
+	genreArtist={} # dictionary of genre info by artist
 	
-	while (count==50):
-		count=0;
-		results = sp.current_user_saved_tracks(50,offset)
-		tracks=[]
-		songs=[]
-		for item in results['items']:
-			track = item['track']
-			artist = track['artists'][0]
+	while (count==50): # while able to collect 50 songs at a time
+		count=0; # set a count of songs
+		results = sp.current_user_saved_tracks(50,offset) # get tracks
+		tracks=[] # list of tracks
+		songs=[] # list of song objects
+		for item in results['items']: # look through the songs returned by results
+			track = item['track'] # get track name
+			artist = track['artists'][0] # get artist of the song
 		
-			if artist['name'] not in genreArtist:
-				info = sp.artist(artist['id'])
-				genreArtist[artist['name']]=info['genres']
-			count+=1
-			song = Song(track['name'],track['id'],track['album']['name'], artist['name'],artist['id'])
-			songs.append(song)
-			tracks.append(track['id'])
+			if artist['name'] not in genreArtist: # check to see if artist has been analyzed
+				info = sp.artist(artist['id']) # if not get artist info
+				genreArtist[artist['name']]=info['genres'] # add list of artist genres
+			count+=1 # increase song count analyzed
+			song = Song(track['name'],track['id'],track['album']['name'], artist['name'],artist['id']) # add to song class
+			songs.append(song) # add song to list
+			tracks.append(track['id']) # add song id to tracks
 		
-		offset+=50
-		features = sp.audio_features(tracks)
-		for index, song in enumerate(songs):
-			feature = features[index]
-			if feature['acousticness']:
+		offset+=50 # increase offset
+		features = sp.audio_features(tracks) # get the song features
+		for index, song in enumerate(songs): # look through each song
+			feature = features[index] # look through features
+			if feature['acousticness']: # for feature, see if exists and add to song information if exists
 				song.acoust = feature['acousticness']	
 			if feature['danceability']:
 				song.dance = feature['danceability']
@@ -84,33 +84,31 @@ def getTrackInfo(token):
 			if feature['valence']:	
 				song.valence = feature['valence']
 			
-			for genre in genreArtist[song.art]:	
-				if genre not in genreSong:
+			for genre in genreArtist[song.art]: # get each genre
+				if genre not in genreSong: # if genre does not exist, create new key with set
 					genreSong[genre]=set()
-			genreSong[genre].add(song)
+				genreSong[genre].add(song) # Add song to genre
 	
-	return genreSong
+	return genreSong # return dictionary
 
 def filterSongs(genres, tone, number):
-	criteria=loadCriteria(tone)
-	songs=[]
-	for genre in genres:
-		for song in genres[genre]:
-			score=songSelect(song, criteria)
-			# Andrew, I edited it like this so that there can never be repeats
-			# If the error is persistent, it means that for the same song, 
-			# there are multiple scores possible
-			if (score, song) not in songs:
-				if score and len(songs)<number:
-					song.score = score
-					heapq.heappush(songs, (score, song))
-				elif score and score<songs[-1][0]:
-					del songs[-1]
-					heapq.heappush(songs, (score, song))
-					heapq.heapify(songs)
+	criteria=loadCriteria(tone) # get the necessary criteria
+	songs=[] # start empty list
+	for genre in genres.keys(): # look through each genre
+		for song in genres[genre]: # look at each song in genre
+			score=songSelect(song, criteria) # get socre
+			if (score, song) not in songs: # if song not included
+				if score and len(songs)<number: # if score exists and less than given number of songs
+					song.score = score # set song score
+					heapq.heappush(songs, (score, song)) # push into list in order
+					heapq.heapify(songs) #re order
+				elif score and score<songs[-1][0]: # if score is lower than lowest score
+					del songs[-1] # delete largest score
+					heapq.heappush(songs, (score, song)) # Add song
+					heapq.heapify(songs) # Reheap
 	return songs
 
-def loadCriteria(tone):
+def loadCriteria(tone): # The various base scores for all tones
 	criteria={}
 	if tone=='study':
 		criteria['acoust']=[2, 0.700]
@@ -536,7 +534,7 @@ while run_spotify:
 		y_spacer = int(0)
 		counter = int(1)
 		for song in songs:
-			songs_text = font.render(str(counter)+". "+song[1].name, 1, (128, 255, 0))
+			songs_text = font.render(str(counter)+". "+song[1].name+"-"+song[1].album, 1, (128, 255, 0))
 			screen.blit(songs_text, (song_startx + 30, song_starty + y_spacer))
 			counter += int(1)
 			y_spacer += int(15)
