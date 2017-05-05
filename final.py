@@ -473,7 +473,6 @@ while run_spotify:
 					side_increment = 0
 					y_spacer = 0
 					for genre in genreInfo.keys():
-						y_spacer+=15
 						if checkbox_y + y_spacer+checkbox_size > 800:
 							y_spacer = 0
 							side_increment += int(300)
@@ -485,6 +484,7 @@ while run_spotify:
 								screen.blit(fill_green, (checkbox_x + side_increment, checkbox_y + y_spacer))
 								pygame.display.flip()
 								genres_dict[genre] = genreInfo[genre]
+						y_spacer+=15
 							
 		# Get out of "Selection screen"
 		selectionMade = True
@@ -564,10 +564,10 @@ while run_spotify:
 					# If User clicks "Yes"
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
 						if y > checkbox_y and y < checkbox_y + checkbox_size:
-							push_playlist(songs, token)
 							fill_green = pygame.image.load("green_square.jpg")
 							screen.blit(fill_green, (checkbox_x, checkbox_y))
 							pygame.display.flip()
+							push_playlist(songs, token)
 															
 					# User presses the "done button"
 					if x > 500 and x<580 and y > 700 and y < 750:
