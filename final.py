@@ -251,8 +251,8 @@ names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255
 collection_text = font.render("Music collection complete, Click to begin", 1, (255, 255, 0))
 
 # Blit main (opening) screen to display
-screen.blit(background, (350, 200))
-screen.blit(names_text, (350, 625))
+screen.blit(background, (315, 200))
+screen.blit(names_text, (350, 475))
 screen.blit(collection_text, (405, 725))
 
 # Display the main (opening) screen 
@@ -266,12 +266,13 @@ clicked_begin_screen = False
 while not clicked_begin_screen:
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONDOWN:
+
 			# Screen has been clicked! Move on to next "Select screen" -- user chooses inputs
 			clicked_begin_screen = True
 
 # Launch program!
 while run_spotify:
-	checkbox_x = 100
+	checkbox_x = 75
 	checkbox_y = 100
 	tone_startx = 1000
 	tone_starty = 100
@@ -316,16 +317,17 @@ while run_spotify:
 		pygame.draw.rect(black_background, (255, 51, 51), (1000, 400, checkbox_size, checkbox_size), checkbox_thickness*2)
 		screen.blit(black_background, (0, 0))
 		
-		tone_text = font.render("Tones: ",1, (255, 225, 0))
-		genre_text = font.render("Genres: ", 1, (255, 255, 0))
+		tone_text = font.render("Tones: ",1, (204, 102, 0))
+		genre_text = font.render("Genres: ", 1, (204, 102, 0))
 		logo = pygame.image.load("logo.jpg")
 		instructions_text = font.render("Choose as many genres as you want, but just one tone, then press 'Done'", 1, (255, 255, 0))
 		select_all = font.render("Select all Genres",  1, (255, 255, 0))
 		screen.blit(logo, (1150, 1150))
 		screen.blit(instructions_text, (45, 45))
 		screen.blit(tone_text, (1000, 75))
-		screen.blit(genre_text, (100, 75))
+		screen.blit(genre_text, (checkbox_x, 75))
 		screen.blit(select_all, (1000+checkbox_size+5, 400))
+
 		# Draw text for the genres!		
 		y_spacer = int(0)
 		for tone in tones:
@@ -333,7 +335,7 @@ while run_spotify:
 			screen.blit(tones_text, (tone_startx + 20, tone_starty + y_spacer))
 			y_spacer += int(15)
 		
-		side_increment =  0
+		side_increment = 0
 		y_spacer = 0
 		for genre in genreInfo.keys():
 			genres_text = font.render(genre, 1, (255, 255, 0))
@@ -345,7 +347,7 @@ while run_spotify:
 							
 	
 		# Draw a "done" button so that user can progress to next "Analysis" page!
-		done_button = font.render("Done", 1, (255, 255, 255))
+		done_button = font.render("Done", 1, (0, 255, 0))
 		
 		# Blit the "done" button to screen
 		screen.blit(done_button, (1000, 300))
@@ -373,36 +375,93 @@ while run_spotify:
 					if x>1000 and x<1200 and y > 400 and y<450:
 						genres_dict = genreInfo
 						print "All Genres included"
-
+						fill_green = pygame.image.load("green_square.jpg")
+						# Include a for loop for all of them
+						side_increment = 0
+						y_spacer = 0
+						for index, genre in enumerate(genreInfo.keys()):
+							if checkbox_y + y_spacer+checkbox_size > 800:
+								y_spacer = 0
+								side_increment += int(300)
+							print genre+" selected"
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (checkbox_x + side_increment, checkbox_y + y_spacer))
+							pygame.display.flip()
+							genres_dict[genre] = genreInfo[genre]
+							y_spacer+=15
+							
 					# User selects a tone
 					space = 15
-					if x > tone_startx and x < tone_startx + checkbox_size:
+					if x > tone_startx and x < tone_startx + checkbox_size and y > tone_starty and y < tone_starty + checkbox_size*8:
+						recolor_done = False
+						num = int(0)
+						while not recolor_done:
+							fill_black = pygame.image.load("black_square.jpg")
+							fill_red = pygame.image.load("red_square.jpg")
+							screen.blit(fill_red, (tone_startx, tone_starty + checkbox_size*num))
+							screen.blit(fill_black, (tone_startx, tone_starty + checkbox_size*num))
+							pygame.display.flip()
+							num += int(1)
+							if num == 8:
+								recolor_done = True
+								
 						if y > tone_starty and y < tone_starty + checkbox_size*1:
 							tone = 'study'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty+1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*1 and y < tone_starty + checkbox_size*2:
 							tone = 'dance'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*1 +1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*2 and y < tone_starty + checkbox_size*3:
 							tone = 'happy'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*2 +1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*3 and y < tone_starty + checkbox_size*4:
 							tone = 'sad'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*3 +1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*4 and y < tone_starty + checkbox_size*5:
 							tone = 'melancholy'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*4 +1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*5 and y < tone_starty + checkbox_size*6:
 							tone = 'fun'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*5 +1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*6 and y < tone_starty + checkbox_size*7:
 							tone = 'angry'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*6 +1))
+							pygame.display.flip()
 						elif y > tone_starty + checkbox_size*7 and y < tone_starty + checkbox_size*8:
 							tone = 'calming'
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*7 +1))
+							pygame.display.flip()
 						print(tone)
 							
 					# User selects a genre
 					side_increment = 0
-					for index, genre in enumerate(genreInfo.keys()):
-						if checkbox_y + space*index > 800:
-							side_increment += int(200)
+					y_spacer = 0
+					for genre in genreInfo.keys():
+						y_spacer+=15
+						if checkbox_y + y_spacer+checkbox_size > 800:
+							y_spacer = 0
+							side_increment += int(300)
+							
 						if x > checkbox_x + side_increment and x < checkbox_x + checkbox_size + side_increment:
-							if y > checkbox_y + space*index and y < checkbox_y + space*(index+1):
+							if y > checkbox_y + y_spacer and y < checkbox_y + y_spacer+checkbox_size:
 								print genre+" selected"
+								fill_green = pygame.image.load("green_square.jpg")
+								screen.blit(fill_green, (checkbox_x + side_increment, checkbox_y + y_spacer))
+								pygame.display.flip()
 								genres_dict[genre] = genreInfo[genre]
 							
 		# Get out of "Selection screen"
@@ -424,7 +483,7 @@ while run_spotify:
 	
 	# Run the function to get the recommended songs
 	songs = filterSongs(genreInfo, tone, number)
-	  
+	
 	while not done_looking:
 		
 		
@@ -437,10 +496,13 @@ while run_spotify:
 		
 		# Blit yes/no checkboxes to screen
 		screen.blit(black_background, (0, 0))
+
 		# Draw a "done" button so that user can progress to next "Analysis" page!
-		done_button = font.render("Done", 1, (255, 255, 255))
+		done_button = font.render("Done", 1, (0, 255, 0))
+
 		# Blit the "done" button to screen
 		screen.blit(done_button, (520, 700))
+
 		# Include text for yes/no checkboxes
 		yes_checkbox_t = font.render("Push Playlist to Spotify", 1, (255, 255, 255))
 
@@ -481,6 +543,9 @@ while run_spotify:
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
 						if y > checkbox_y and y < checkbox_y + checkbox_size:
 							push_playlist(songs, token)
+							fill_green = pygame.image.load("green_square.jpg")
+							screen.blit(fill_green, (checkbox_x, checkbox_y))
+							pygame.display.flip()
 															
 					# User presses the "done button"
 					if x > 500 and x<580 and y > 700 and y < 750:
@@ -488,6 +553,7 @@ while run_spotify:
 		
 		# Get out of while loop if User is done looking at songs
 		done_looking = True
+
 	# Refresh the page and make text and checkboxes to play again
 	end_boxes_x = 700;
 	again_box_y = 400;
