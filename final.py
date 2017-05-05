@@ -71,12 +71,18 @@ def getTrackInfo(token):
 		features = sp.audio_features(tracks)
 		for index, song in enumerate(songs):
 			feature = features[index]
-			song.acoust = feature['acousticness']	
-			song.dance = feature['danceability']
-			song.energy = feature['energy']
-			song.speech = feature['speechiness']
-			song.loud = feature['loudness']
-			song.valence = feature['valence']
+			if feature['acousticness']:
+				song.acoust = feature['acousticness']	
+			if feature['danceability']:
+				song.dance = feature['danceability']
+			if feature['energy']:	
+				song.energy = feature['energy']
+			if feature['speechiness']:	
+				song.speech = feature['speechiness']
+			if feature['loudness']:	
+				song.loud = feature['loudness']
+			if feature['valence']:	
+				song.valence = feature['valence']
 			
 			for genre in genreArtist[song.art]:	
 				if genre not in genreSong:
@@ -228,12 +234,6 @@ pygame.display.set_caption('Spotify Playlist')
 
 # Create and assign useful variables
 font = pygame.font.SysFont("times", 19)
-checkbox_x = 100
-checkbox_y = 100
-tone_startx = 700
-tone_starty = 200
-checkbox_size = 15
-checkbox_thickness = 1
 
 # Create and assign default variables for the user
 tone = 'study'
@@ -246,46 +246,43 @@ genreInfo = {}
 # Get ready to launch program
 run_spotify = True
 background = pygame.image.load("spotify.jpg")
+background = pygame.transform.scale(background, (600, 271))
 names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
 collection_text = font.render("Music collection complete, Click to begin", 1, (255, 255, 0))
 
 # Blit main (opening) screen to display
-screen.blit(background, (160, 150))
-screen.blit(names_text, (240, 625))
-screen.blit(collection_text, (160, 725))
+screen.blit(background, (350, 200))
+screen.blit(names_text, (350, 625))
+screen.blit(collection_text, (405, 725))
 
 # Display the main (opening) screen 
 pygame.display.flip()
 
-# Have display first before retrieving genreInfo to ensure the main page has been loaded
-print "Begin sleep!"
-time.sleep(5);
-print "End sleep!"
-
 # Retrieve genre information based on the token -- the key to the username's Spotify account!
 genreInfo = getTrackInfo(token)
 
+# While screen has not been clicked
+clicked_begin_screen = False
+while not clicked_begin_screen:
+	for event in pygame.event.get():
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			# Screen has been clicked! Move on to next "Select screen" -- user chooses inputs
+			clicked_begin_screen = True
+
 # Launch program!
 while run_spotify:
-	events = pygame.event.get()
-	clicked_begin_screen = False
-	
-	# While screen has not been clicked
-	while not clicked_begin_screen:
-		for event in pygame.event.get():
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				# Screen has been clicked! Move on to next "Select screen" -- user chooses inputs
-				clicked_begin_screen = True
+	checkbox_x = 100
+	checkbox_y = 100
+	tone_startx = 1000
+	tone_starty = 100
+	checkbox_size = 15
+	checkbox_thickness = 1
 	
 	# Refresh background -- black_background will "refresh" screen by drawing over
 	black_background = pygame.image.load("black_screen.jpg")
-	logo = pygame.image.load("logo.jpg")
-	instructions_text = font.render("Choose as many genres as you want, but just one tone, then press 'Done'", 1, (255, 255, 0))
 	
 	# Blit the black_background to actual PyGame area
 	screen.blit(black_background, (0, 0))
-	screen.blit(logo, (1150, 1150))
-	screen.blit(instructions_text, (45, 45))
 	
 	# Display the screen
 	pygame.display.flip();
@@ -301,42 +298,57 @@ while run_spotify:
 		# Draw checkbox for the tones/genres!
 		y_spacer = int(0)
 		for tone in tones:
-			pygame.draw.rect(black_background, (255, 51, 51), (tone_startx, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
+			pygame.draw.rect(black_background, (255, 51, 51), (tone_startx, tone_starty+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
 			screen.blit(black_background, (0, 0))
 			y_spacer += int(15)
 		
-		side_increment=0	
+		side_increment=0
+		y_spacer = 0	
 		for genre in genreInfo.keys():
 			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x + side_increment, checkbox_y+y_spacer, checkbox_size, checkbox_size), 
 			checkbox_thickness*2)
 			screen.blit(black_background, (0, 0))
 			y_spacer += int(15)
-			if checkbox_y + y_spacer > 800:
+			if checkbox_y + y_spacer + checkbox_size > 800:
 				y_spacer = 0
-				side_increment += 50
+				side_increment += 300
+
+		pygame.draw.rect(black_background, (255, 51, 51), (1000, 400, checkbox_size, checkbox_size), checkbox_thickness*2)
+		screen.blit(black_background, (0, 0))
 		
+		tone_text = font.render("Tones: ",1, (255, 225, 0))
+		genre_text = font.render("Genres: ", 1, (255, 255, 0))
+		logo = pygame.image.load("logo.jpg")
+		instructions_text = font.render("Choose as many genres as you want, but just one tone, then press 'Done'", 1, (255, 255, 0))
+		select_all = font.render("Select all Genres",  1, (255, 255, 0))
+		screen.blit(logo, (1150, 1150))
+		screen.blit(instructions_text, (45, 45))
+		screen.blit(tone_text, (1000, 75))
+		screen.blit(genre_text, (100, 75))
+		screen.blit(select_all, (1000+checkbox_size+5, 400))
 		# Draw text for the genres!		
 		y_spacer = int(0)
 		for tone in tones:
 			tones_text = font.render(tone, 1, (255, 225, 0))
-			screen.blit(tones_text, (tone_startx + 15, tone_starty + y_spacer))
+			screen.blit(tones_text, (tone_startx + 20, tone_starty + y_spacer))
 			y_spacer += int(15)
 		
 		side_increment =  0
+		y_spacer = 0
 		for genre in genreInfo.keys():
 			genres_text = font.render(genre, 1, (255, 255, 0))
-			screen.blit(genres_text, (checkbox_x + 15 + side_increment, checkbox_y + y_spacer))
+			screen.blit(genres_text, (checkbox_x + 20 + side_increment, checkbox_y + y_spacer))
 			y_spacer+=15
-			if checkbox_y + y_spacer + 15 > 800:	
+			if checkbox_y + y_spacer + checkbox_size > 800:	
 				y_spacer = 0
-				side_increment += 50
+				side_increment += 300
 							
 	
 		# Draw a "done" button so that user can progress to next "Analysis" page!
 		done_button = font.render("Done", 1, (255, 255, 255))
 		
 		# Blit the "done" button to screen
-		screen.blit(done_button, (700, 100))
+		screen.blit(done_button, (1000, 300))
 			
 		# Display all - checkboxes, texts (labels), and "done" button
 		pygame.display.flip()
@@ -355,37 +367,42 @@ while run_spotify:
 					print "x: "+str(x)+" y: "+str(y)
 					
 					# User presses the "done button"
-					if x > 600 and y > 90 and y < 120:
+					if x > 1000 and x <1050 and y < 350 and y > 300:
 						choices_completed = True
+
+					if x>1000 and x<1200 and y > 400 and y<450:
+						genres_dict = genreInfo
+						print "All Genres included"
 
 					# User selects a tone
 					space = 15
 					if x > tone_startx and x < tone_startx + checkbox_size:
-						if y > tone_starty and y < tone_starty + space*1:
+						if y > tone_starty and y < tone_starty + checkbox_size*1:
 							tone = 'study'
-						elif y > tone_starty + space*2 and y < tone_starty + space*3:
+						elif y > tone_starty + checkbox_size*1 and y < tone_starty + checkbox_size*2:
 							tone = 'dance'
-						elif y > tone_starty + space*4 and y < tone_starty + space*5:
+						elif y > tone_starty + checkbox_size*2 and y < tone_starty + checkbox_size*3:
 							tone = 'happy'
-						elif y > tone_starty + space*6 and y < tone_starty + space*7:
+						elif y > tone_starty + checkbox_size*3 and y < tone_starty + checkbox_size*4:
 							tone = 'sad'
-						elif y > tone_starty + space*8 and y < tone_starty + space*9:
+						elif y > tone_starty + checkbox_size*4 and y < tone_starty + checkbox_size*5:
 							tone = 'melancholy'
-						elif y > tone_starty + space*10 and y < tone_starty + space*11:
-							tone += 'fun'
-						elif y > tone_starty + space*12 and y < tone_starty + space*13:
-							tone += 'angry'
-						elif y > tone_starty + space*14 and y < tone_starty + space*15:
-							tone += 'calming'
-							print(tone)
+						elif y > tone_starty + checkbox_size*5 and y < tone_starty + checkbox_size*6:
+							tone = 'fun'
+						elif y > tone_starty + checkbox_size*6 and y < tone_starty + checkbox_size*7:
+							tone = 'angry'
+						elif y > tone_starty + checkbox_size*7 and y < tone_starty + checkbox_size*8:
+							tone = 'calming'
+						print(tone)
 							
 					# User selects a genre
 					side_increment = 0
 					for index, genre in enumerate(genreInfo.keys()):
 						if checkbox_y + space*index > 800:
-							side_increment += int(50)
+							side_increment += int(200)
 						if x > checkbox_x + side_increment and x < checkbox_x + checkbox_size + side_increment:
 							if y > checkbox_y + space*index and y < checkbox_y + space*(index+1):
+								print genre+" selected"
 								genres_dict[genre] = genreInfo[genre]
 							
 		# Get out of "Selection screen"
@@ -417,25 +434,23 @@ while run_spotify:
 		
 		# Draw yes/no checkboxes
 		pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y, checkbox_size, checkbox_size), checkbox_thickness*2)
-		pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x, checkbox_y + 15, checkbox_size, checkbox_size), checkbox_thickness*2)
 		
 		# Blit yes/no checkboxes to screen
 		screen.blit(black_background, (0, 0))
 		# Draw a "done" button so that user can progress to next "Analysis" page!
 		done_button = font.render("Done", 1, (255, 255, 255))
 		# Blit the "done" button to screen
-		screen.blit(done_button, (350, 600))
+		screen.blit(done_button, (520, 700))
 		# Include text for yes/no checkboxes
-		yes_checkbox_t = font.render("Yes", 1, (0, 0, 255))
-		no_checkbox_t = font.render("No", 1, (255, 0, 0))
+		yes_checkbox_t = font.render("Push Playlist to Spotify", 1, (255, 255, 255))
 
-		#
+		# Initial song positions
 		song_startx = 100
 		song_starty = 100
 
 		# Display recommended songs to user
 		y_spacer = int(0)
-		counter = int(0)
+		counter = int(1)
 		for song in songs:
 			songs_text = font.render(str(counter)+". "+song[1].name, 1, (128, 255, 0))
 			screen.blit(songs_text, (song_startx + 30, song_starty + y_spacer))
@@ -444,15 +459,12 @@ while run_spotify:
 			
 		# Blit yes/no text to screen
 		screen.blit(yes_checkbox_t, (checkbox_x + 15, checkbox_y))
-		screen.blit(no_checkbox_t, (checkbox_x + 15, checkbox_y + 15))
 		
 		# Include instructions
-		instructions_text = font.render("Choose to either push or not push these songs into a playlist", 1, (255, 255, 0))
-		instructions2_text=font.render("in your account then press 'Done'", 1, (255, 255, 0))
+		instructions_text = font.render("Choose to either push or not push these songs into a playlist in your account then press 'Done'", 1, (255, 255, 0))
 		
 		# Blit instructions to screen
 		screen.blit(instructions_text, (45, 45))
-		screen.blit(instructions2_text, (45, 90)) 
 		
 		# Actually display everything -- "done" button, the yes/no texts, the yes/no checkboxes
 		pygame.display.flip()
@@ -462,27 +474,35 @@ while run_spotify:
 		
 		while not push_decision_made:
 			for event in pygame.event.get():
-				if event == pygame.MOUSEBUTTONDOWN:
+				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
+					print "x: "+str(x)+" y: "+str(y)
 					# If User clicks "Yes"
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
-						if y > checkbox_y and y < checkbox_y + y_spacer:
+						if y > checkbox_y and y < checkbox_y + checkbox_size:
 							push_playlist(songs, token)
 															
 					# User presses the "done button"
-					if x > 350 and x<400 and y > 590 and y < 620:
+					if x > 500 and x<580 and y > 700 and y < 750:
 						push_decision_made = True
 		
 		# Get out of while loop if User is done looking at songs
 		done_looking = True
-	
-	# Refresh the page
+	# Refresh the page and make text and checkboxes to play again
+	end_boxes_x = 700;
+	again_box_y = 400;
+	end_box_y = 450;
 	black_background = pygame.image.load("black_screen.jpg")
+	pygame.draw.rect(black_background, (255, 51, 51), (end_boxes_x, end_box_y, checkbox_size, checkbox_size), checkbox_thickness*2)
+	pygame.draw.rect(black_background, (255, 51, 51), (end_boxes_x, again_box_y, checkbox_size, checkbox_size), checkbox_thickness*2)
 	logo = pygame.image.load("logo.jpg")
-	
+	again = font.render("New Playlist", 1, (255, 255, 0))
+	end = font.render("End Program", 1, (255, 255, 0))
 	# Blit the black_background to actual PyGame area
 	screen.blit(black_background, (0, 0))
-	screen.blit(logo, (650, 650))
+	screen.blit(logo, (650, 650), )
+	screen.blit(again, (end_boxes_x+20, again_box_y))
+	screen.blit(end, (end_boxes_x+20, end_box_y))
 	
 	# Display the refreshed final screen
 	pygame.display.flip()
@@ -491,7 +511,9 @@ while run_spotify:
 	thankyou_text = font.render("Thank you for participating in our demonstration of our project!", 1, (255, 255, 0))
 	maru_choi = pygame.image.load("maru_choi.jpg")
 	jin_kim = pygame.image.load("jin_kim.jpg")
+	jin_kim = pygame.transform.scale(jin_kim,(95, 95))
 	andrew_litteken = pygame.image.load("andrew_litteken.jpg")
+	andrew_litteken = pygame.transform.scale(andrew_litteken,(95, 95))
 	
 	# Screen blit all -- our images, and thank you text
 	screen.blit(maru_choi, (150, 150))
@@ -501,4 +523,18 @@ while run_spotify:
 	
 	# Display the final "Thank you" screen -- our images and thank you text
 	pygame.display.flip()
+	decision_made = False
+	while not decision_made:
+			for event in pygame.event.get():
+				if event.type == pygame.MOUSEBUTTONDOWN:
+					x, y = pygame.mouse.get_pos()
+					print "x: "+str(x)+" y: "+str(y)
+					# If User clicks "Yes"
+					if x > end_boxes_x and x < end_boxes_x + checkbox_size:
+						if y > again_box_y and y < again_box_y + checkbox_size:
+							decision_made=True
+						elif y > end_box_y and y<end_box_y + checkbox_size:
+							decision_made=True
+							run_spotify=False
+
 	
