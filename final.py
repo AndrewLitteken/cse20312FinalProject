@@ -215,7 +215,6 @@ def push_playlist(songs, token):
 # Begin Program
 
 # Initialize pygame
-
 pygame.init()
 
 # Begin background formatting
@@ -223,21 +222,25 @@ screen = pygame.display.set_mode((1200, 800))
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 pygame.display.set_caption('Spotify Playlist')
+
 # Create and assign useful variables
 font = pygame.font.SysFont("times", 19)
 
+# Load background content
 background = pygame.image.load("spotify.jpg")
 background = pygame.transform.scale(background, (600, 271))
 names_text = font.render("DONE BY: MARU CHOI, JIN KIM, ANDREW LITTEKEN", 1, (255, 255, 0))
 collection_text = font.render("Collecting Music...", 1, (255, 255, 0))
 
+# Blit content to the "main" screen
 screen.blit(background, (315, 200))
 screen.blit(names_text, (350, 475))
 screen.blit(collection_text, (475, 725))
 
+# Actually display the content to the User
 pygame.display.flip()
 
-# Enter Spotify username here
+# Prompt User to enter username here:
 username = raw_input("Enter your Username: ")
 
 # Retrieve User Information
@@ -279,14 +282,11 @@ screen.blit(collection_text, (405, 725))
 # Display the main (opening) screen 
 pygame.display.flip()
 
-
-
 # While screen has not been clicked
 clicked_begin_screen = False
 while not clicked_begin_screen:
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONDOWN:
-
 			# Screen has been clicked! Move on to next "Select screen" -- user chooses inputs
 			clicked_begin_screen = True
 
@@ -326,29 +326,33 @@ while run_spotify:
 		side_increment=0
 		y_spacer = 0	
 		for genre in genreInfo.keys():
-			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x + side_increment, checkbox_y+y_spacer, checkbox_size, checkbox_size), 
-			checkbox_thickness*2)
+			pygame.draw.rect(black_background, (255, 51, 51), (checkbox_x + side_increment, checkbox_y+y_spacer, checkbox_size, checkbox_size), checkbox_thickness*2)
 			screen.blit(black_background, (0, 0))
 			y_spacer += int(15)
 			if checkbox_y + y_spacer + checkbox_size > 800:
 				y_spacer = 0
 				side_increment += 300
 
+
+		# Draw a checkbox for the enabling of selecting all genres
 		pygame.draw.rect(black_background, (255, 51, 51), (1000, 400, checkbox_size, checkbox_size), checkbox_thickness*2)
 		screen.blit(black_background, (0, 0))
 		
+		# Establish some textual content
 		tone_text = font.render("Tones: ",1, (204, 102, 0))
 		genre_text = font.render("Genres: ", 1, (204, 102, 0))
 		logo = pygame.image.load("logo.jpg")
 		instructions_text = font.render("Choose as many genres as you want, but just one tone, then press 'Done'", 1, (255, 255, 0))
 		select_all = font.render("Select all Genres",  1, (255, 255, 0))
+		
+		# Blit the content to the screen so that the User can see them
 		screen.blit(logo, (1150, 1150))
 		screen.blit(instructions_text, (45, 45))
 		screen.blit(tone_text, (1000, 75))
 		screen.blit(genre_text, (checkbox_x, 75))
-		screen.blit(select_all, (1000+checkbox_size+5, 400))
+		screen.blit(select_all, (1000 + checkbox_size + 5, 400))
 
-		# Draw text for the genres!		
+		# Draw text for the genres/tones!		
 		y_spacer = int(0)
 		for tone in tones:
 			tones_text = font.render(tone, 1, (255, 225, 0))
@@ -360,7 +364,7 @@ while run_spotify:
 		for genre in genreInfo.keys():
 			genres_text = font.render(genre, 1, (255, 255, 0))
 			screen.blit(genres_text, (checkbox_x + 20 + side_increment, checkbox_y + y_spacer))
-			y_spacer+=15
+			y_spacer += 15
 			if checkbox_y + y_spacer + checkbox_size > 800:	
 				y_spacer = 0
 				side_increment += 300
@@ -386,16 +390,17 @@ while run_spotify:
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
-					print "x: "+str(x)+" y: "+str(y)
+					print "x: " + str(x) + " y: " + str(y)
 					
 					# User presses the "done button"
-					if x > 1000 and x <1050 and y < 350 and y > 300:
+					if x > 1000 and x < 1050 and y < 350 and y > 300:
 						choices_completed = True
 
-					if x>1000 and x<1200 and y > 400 and y<450:
+					if x > 1000 and x < 1200 and y > 400 and y < 450:
 						genres_dict = genreInfo
 						print "All Genres included"
 						fill_green = pygame.image.load("green_square.jpg")
+						
 						# Include a for loop for all of them
 						side_increment = 0
 						y_spacer = 0
@@ -403,18 +408,19 @@ while run_spotify:
 							if checkbox_y + y_spacer+checkbox_size > 800:
 								y_spacer = 0
 								side_increment += int(300)
-							print genre+" selected"
 							fill_green = pygame.image.load("green_square.jpg")
 							screen.blit(fill_green, (checkbox_x + side_increment, checkbox_y + y_spacer))
 							pygame.display.flip()
 							genres_dict[genre] = genreInfo[genre]
-							y_spacer+=15
+							y_spacer += 15
 							
 					# User selects a tone
 					space = 15
 					if x > tone_startx and x < tone_startx + checkbox_size and y > tone_starty and y < tone_starty + checkbox_size*8:
 						recolor_done = False
 						num = int(0)
+						
+						# "Refresh" all the other checkboxes that have not been chosen for tones
 						while not recolor_done:
 							fill_black = pygame.image.load("black_square.jpg")
 							fill_red = pygame.image.load("red_square.jpg")
@@ -424,7 +430,8 @@ while run_spotify:
 							num += int(1)
 							if num == 8:
 								recolor_done = True
-								
+						
+						# Modify the tone variable -- display the effect of "selecting" a checkbox to the User		
 						if y > tone_starty and y < tone_starty + checkbox_size*1:
 							tone = 'study'
 							fill_green = pygame.image.load("green_square.jpg")
@@ -471,13 +478,16 @@ while run_spotify:
 					side_increment = 0
 					y_spacer = 0
 					for genre in genreInfo.keys():
+					
+						# If the checkbox list of genres goes beyond the boundary of the screen
 						if checkbox_y + y_spacer+checkbox_size > 800:
 							y_spacer = 0
 							side_increment += int(300)
 							
+						# Display the effect of the user's choice for genres
 						if x > checkbox_x + side_increment and x < checkbox_x + checkbox_size + side_increment:
 							if y > checkbox_y + y_spacer and y < checkbox_y + y_spacer+checkbox_size:
-								print genre+" selected"
+								print genre + " selected"
 								fill_green = pygame.image.load("green_square.jpg")
 								screen.blit(fill_green, (checkbox_x + side_increment, checkbox_y + y_spacer))
 								pygame.display.flip()
@@ -558,7 +568,8 @@ while run_spotify:
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
-					print "x: "+str(x)+" y: "+str(y)
+					print "x: " + str(x) + " y: " + str(y)
+					
 					# If User clicks "Yes"
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
 						if y > checkbox_y and y < checkbox_y + checkbox_size:
@@ -568,22 +579,25 @@ while run_spotify:
 							push_playlist(songs, token)
 															
 					# User presses the "done button"
-					if x > 500 and x<580 and y > 700 and y < 750:
+					if x > 500 and x < 580 and y > 700 and y < 750:
 						push_decision_made = True
 		
 		# Get out of while loop if User is done looking at songs
 		done_looking = True
 
-	# Refresh the page and make text and checkboxes to play again
+	# Redefine variables for the page and make text and checkboxes to play again
 	end_boxes_x = 700;
 	again_box_y = 400;
 	end_box_y = 450;
+	
+	# Load the information necessary to display; also draw the checkboxes appropriately
 	black_background = pygame.image.load("black_screen.jpg")
 	pygame.draw.rect(black_background, (255, 51, 51), (end_boxes_x, end_box_y, checkbox_size, checkbox_size), checkbox_thickness*2)
 	pygame.draw.rect(black_background, (255, 51, 51), (end_boxes_x, again_box_y, checkbox_size, checkbox_size), checkbox_thickness*2)
 	logo = pygame.image.load("logo.jpg")
 	again = font.render("New Playlist", 1, (255, 255, 0))
 	end = font.render("End Program", 1, (255, 255, 0))
+	
 	# Blit the black_background to actual PyGame area
 	screen.blit(black_background, (0, 0))
 	screen.blit(logo, (650, 650), )
@@ -594,7 +608,7 @@ while run_spotify:
 	pygame.display.flip()
 	
 	# Include "Thank you" message and our pictures
-	thankyou_text = font.render("Thank you for participating in our demonstration of our project!", 1, (255, 255, 0))
+	thankyou_text = font.render("THANK YOU for participating in our demonstration of our project!", 1, (255, 255, 0))
 	maru_choi = pygame.image.load("maru_choi.jpg")
 	jin_kim = pygame.image.load("jin_kim.jpg")
 	jin_kim = pygame.transform.scale(jin_kim,(95, 95))
@@ -614,13 +628,13 @@ while run_spotify:
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
-					print "x: "+str(x)+" y: "+str(y)
+					print "x: " + str(x) + " y: " + str(y)
 					# If User clicks "Yes"
 					if x > end_boxes_x and x < end_boxes_x + checkbox_size:
 						if y > again_box_y and y < again_box_y + checkbox_size:
-							decision_made=True
-						elif y > end_box_y and y<end_box_y + checkbox_size:
-							decision_made=True
-							run_spotify=False
+							decision_made = True
+						elif y > end_box_y and y < end_box_y + checkbox_size:
+							decision_made = True
+							run_spotify = False
 
 	
