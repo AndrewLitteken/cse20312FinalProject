@@ -390,7 +390,6 @@ while run_spotify:
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
-					print "x: " + str(x) + " y: " + str(y)
 					
 					# User presses the "done button"
 					if x > 1000 and x < 1050 and y < 350 and y > 300:
@@ -398,7 +397,6 @@ while run_spotify:
 
 					if x > 1000 and x < 1200 and y > 400 and y < 450:
 						genres_dict = genreInfo
-						print "All Genres included"
 						fill_green = pygame.image.load("green_square.jpg")
 						
 						# Include a for loop for all of them
@@ -472,7 +470,6 @@ while run_spotify:
 							fill_green = pygame.image.load("green_square.jpg")
 							screen.blit(fill_green, (tone_startx+1, tone_starty + checkbox_size*7 +1))
 							pygame.display.flip()
-						print(tone)
 							
 					# User selects a genre
 					side_increment = 0
@@ -487,7 +484,6 @@ while run_spotify:
 						# Display the effect of the user's choice for genres
 						if x > checkbox_x + side_increment and x < checkbox_x + checkbox_size + side_increment:
 							if y > checkbox_y + y_spacer and y < checkbox_y + y_spacer+checkbox_size:
-								print genre + " selected"
 								fill_green = pygame.image.load("green_square.jpg")
 								screen.blit(fill_green, (checkbox_x + side_increment, checkbox_y + y_spacer))
 								pygame.display.flip()
@@ -568,7 +564,6 @@ while run_spotify:
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
-					print "x: " + str(x) + " y: " + str(y)
 					
 					# If User clicks "Yes"
 					if x > checkbox_x and x < checkbox_x + checkbox_size:
@@ -628,7 +623,6 @@ while run_spotify:
 			for event in pygame.event.get():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					x, y = pygame.mouse.get_pos()
-					print "x: " + str(x) + " y: " + str(y)
 					# If User clicks "Yes"
 					if x > end_boxes_x and x < end_boxes_x + checkbox_size:
 						if y > again_box_y and y < again_box_y + checkbox_size:
